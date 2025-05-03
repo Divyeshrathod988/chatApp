@@ -19,7 +19,7 @@ pipeline {
             steps {
                 echo 'Cloning the repository...'
                 // Use 'main' if your repo uses it instead of 'master'
-                sh 'git clone -b main '
+                sh 'git clone -b main https://github.com/Divyeshrathod988/chatApp.git'
             }
         }
         stage('Check Workspace Files') {
