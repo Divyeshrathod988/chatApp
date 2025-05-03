@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chat APP</title>
+    <style>
+       body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh; /* Fill the viewport height */
+            margin: 0; /* Remove default margin */
+        }
+
+        /* Container for all elements */
+        #chat-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 90%; /* Use most of the screen width */
+            max-width: 350px; /* Limit the width for larger screens */
+            padding: 10px;
+            border: 1px solid #151111;
+            border-radius: 8px;
+            background-color: #7bcceb; /* Light background */
+        }
+
+        /* Style for the messages div */
+        #messages {
+            width: 100%;
+            height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 8px; /* Rounded corners */
+            margin-bottom: 10px;
+        }
+
+        /* Style for user messages */
+        .message {
+            padding: 8px 12px;
+            margin: 5px 0;
+            background-color: #eeeed1;
+            border-radius: 8px;
+            max-width: 80%;
+        }
+
+        /* Style for the input and button */
+        #message {
+            width: calc(100% - 70px);
+            height: 20px;
+            border-radius: 8px;
+            padding: 5px;
+            margin-right: 10px;
+        }
+
+        #sendBtn {
+            height: 30px;
+            width: 60px;
+            color: antiquewhite;
+            background-color: teal;
+            border-radius: 8px;
+            border-color: teal;
+            border: none;
+        }
+        .messbtn{
+            display: flex;
+        }
+
+        /* Responsive design for smaller screens */
+        @media (max-width: 400px) {
+            #message,
+            #sendBtn {
+                width: calc(100% - 5px); /* Adjust width for smaller screens */
+            }
+        }
+    </style>
+  </head>
+  <body>
+    <div id="chat-container">
+        <h1>Chat Anonymously</h1>
+        <div id="messages"></div>
+        <div class="messbtn">
+            <input type="text" id="message" placeholder="Enter Message" />
+            <button id="sendBtn">Send</button>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      let userId;
+      let userColor;
+
+      const socket = io();
+      const sendBtn = document.getElementById("sendBtn");
+      const messageInput = document.getElementById("message");
+      const allMessages = document.getElementById("messages");
+
+      // Initialize user ID and color from server
+      socket.on("init", (data) => {
+        userId = data.userId;
+        userColor = data.userColor;
+      });
+
+      // Handle incoming messages
+      socket.on("message", (messageObject) => {
+        const { message, userColor } = messageObject;
+
+        // Create a new paragraph element for the message
+        const p = document.createElement("p");
+        p.innerText = message;
+        p.style.color = userColor;
+        p.classList.add("message");
+
+        // Append the message element to the messages div
+        allMessages.appendChild(p);
+
+        // Scroll to the bottom of the messages div to keep the latest message in view
+        allMessages.scrollTop = allMessages.scrollHeight;
+      });
+
+      // Handle sending messages
+      sendBtn.addEventListener("click", () => {
+        const message = messageInput.value;
+        socket.emit("user-message", { userId, message });
+
+        // Clear the input field
+        messageInput.value = '';
+      });
+    </script>
+  </body>
+</html>
