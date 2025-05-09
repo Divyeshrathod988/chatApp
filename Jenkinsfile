@@ -2,16 +2,16 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_HUB_CREDENTIALS = credentials('docker')         // Docker Hub credentials
-        EC2_SSH_CREDENTIALS = credentials('ec2_ssh')           // EC2 SSH credentials
+        DOCKER_HUB_CREDENTIALS = credentials('docker')
+        EC2_SSH_CREDENTIALS = credentials('ec2_ssh')
         DOCKER_IMAGE = "divyeshrathod/website"
-        EC2_INSTANCE_IP = "3.7.68.32"                          // EC2 instance public IP
+        EC2_INSTANCE_IP = "3.7.68.32"
     }
 
     stages {
         stage('Cleanup Workspace') {
             steps {
-                deleteDir() // Clean the workspace to ensure a fresh clone
+                deleteDir()
             }
         }
 
@@ -66,7 +66,11 @@ pipeline {
 
     post {
         always {
-            cleanWs()
+            node {
+                script {
+                    deleteDir()
+                }
+            }
         }
     }
 }
