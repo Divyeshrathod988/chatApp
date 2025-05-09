@@ -2,10 +2,10 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_HUB_CREDENTIALS = credentials('dockerHub')  // Docker Hub credentials
-        EC2_SSH_CREDENTIALS = credentials('EC2SSH')        // EC2 SSH credentials
-        DOCKER_IMAGE = "dvs/chatapp"
-        EC2_INSTANCE_IP = "54.89.215.128"             // EC2 instance public IP
+        DOCKER_HUB_CREDENTIALS = credentials('docker')  // Docker Hub credentials
+        EC2_SSH_CREDENTIALS = credentials('ec2_ssh')        // EC2 SSH credentials
+        DOCKER_IMAGE = "divyeshrathod/website"
+        EC2_INSTANCE_IP = "3.7.68.32"             // EC2 instance public IP
     }
 
   stages {
@@ -32,7 +32,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 echo 'Building the Docker image...'
-                sh 'docker build -t dvs:latest -f chatApp/Dockerfile chatApp'
+                sh 'docker build -t divyeshrathod/website -f chatApp/Dockerfile chatApp'
             }
         }
 
@@ -40,7 +40,7 @@ pipeline {
             steps {
                 script {
                     // Log in to Docker Hub
-                    docker.withRegistry('https://registry.hub.docker.com', 'dockerHub') {
+                    docker.withRegistry('https://registry.hub.docker.com', 'docker') {
                         // Push the built Docker image to Docker Hub
                         docker.image("${DOCKER_IMAGE}:latest").push()
                     }
@@ -52,13 +52,13 @@ pipeline {
         steps {
             script {
             // SSH into the EC2 instance and pull & run the Docker image
-            sshagent(['EC2SSH']) {
+            sshagent(['ec2_ssh']) {
                  sh '''
-ssh -o StrictHostKeyChecking=no ubuntu@54.89.215.128 <<EOF
-docker pull dvs:latest
+ssh -o StrictHostKeyChecking=no ec2-user@3.7.68.32 <<EOF
+docker pull divyeshrathod/website:latest
 docker stop chatapp || true
 docker rm chatapp || true
-docker run -d -p 9000:9000 --name dvs:latest
+docker run -d -p 9000:9000 --name divyeshrathod/website:latest
 EOF
 '''
 
