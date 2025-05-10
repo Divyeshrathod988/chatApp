@@ -2,10 +2,10 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_HUB_CREDENTIALS = credentials('docker')  // Docker Hub credentials
-        EC2_SSH_CREDENTIALS = credentials('ec2_ssh')        // EC2 SSH credentials
+        DOCKER_HUB_CREDENTIALS = credentials('docker')     // Docker Hub credentials
+        EC2_SSH_CREDENTIALS = credentials('ec2_ssh')       // EC2 SSH credentials
         DOCKER_IMAGE = "divyeshrathod/website"
-        EC2_INSTANCE_IP = "13.233.55.19"             // EC2 instance public IP
+        EC2_INSTANCE_IP = "13.233.55.19"                   // EC2 instance public IP
     }
 
     stages {
@@ -14,17 +14,18 @@ pipeline {
                 cleanWs() // Clean the workspace to ensure fresh clone
             }
         }
+
         stage('Clone Repository') {
             steps {
                 echo 'Cloning the repository...'
-                // Use 'main' if your repo uses it instead of 'master'
                 sh 'git clone -b main https://github.com/Divyeshrathod988/chatApp.git'
             }
         }
+
         stage('Check Workspace Files') {
             steps {
                 sh 'ls -la'
-                sh 'ls -la chatApp' // This will list all files in the workspace to check for Dockerfile
+                sh 'ls -la chatApp'
             }
         }
 
@@ -38,9 +39,7 @@ pipeline {
         stage('Push to Docker Hub') {
             steps {
                 script {
-                    // Log in to Docker Hub
                     docker.withRegistry('https://registry.hub.docker.com', 'docker') {
-                        // Push the built Docker image to Docker Hub
                         docker.image("${DOCKER_IMAGE}:latest").push()
                     }
                 }
@@ -50,14 +49,13 @@ pipeline {
         stage('Deploy to EC2') {
             steps {
                 script {
-                    // SSH into the EC2 instance and pull & run the Docker image
                     sshagent(['ec2_ssh']) {
                         sh '''
                         ssh -o StrictHostKeyChecking=no ec2-user@13.233.55.19 <<EOF
                         docker pull divyeshrathod/website:latest
                         docker stop chatapp || true
                         docker rm chatapp || true
-                        docker run -d -p 9000:9000 --name divyeshrathod/website:latest
+                        docker run -d -p 9000:9000 --name chatapp divyeshrathod/website:latest
                         EOF
                         '''
                     }
@@ -68,7 +66,10 @@ pipeline {
 
     post {
         always {
-            cleanWs() // This will clean up the workspace after the pipeline
+            node {
+                cleanWs() // FIXED: wrap in node to provide workspace context
+            }
         }
     }
 }
+
