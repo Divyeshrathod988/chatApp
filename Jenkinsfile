@@ -66,10 +66,8 @@ pipeline {
 
     post {
         always {
-            node {
-                cleanWs() // FIXED: wrap in node to provide workspace context
-            }
+            echo 'Cleaning workspace after pipeline run...'
+            cleanWs() // ✅ Now valid without wrapping in node
         }
     }
 }
-
