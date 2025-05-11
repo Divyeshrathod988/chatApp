@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         DOCKER_HUB_CREDENTIALS = credentials('docker')     // Docker Hub credentials
-        EC2_SSH_CREDENTIALS = credentials('ssh_ec2')       // EC2 SSH credentials
+        EC2_SSH_CREDENTIALS = credentials('ec2_ssh')       // EC2 SSH credentials
         DOCKER_IMAGE = "divyeshrathod/website"
         EC2_INSTANCE_IP = "3.111.39.87"                   // EC2 instance public IP
     }
@@ -49,7 +49,7 @@ pipeline {
         stage('Deploy to EC2') {
             steps {
                 script {
-                    sshagent(['ssh_ec2']) {
+                    sshagent(['ec2_ssh']) {
                         sh '''
                         ssh -o StrictHostKeyChecking=no ubuntu@3.111.39.87 <<EOF
                         docker pull divyeshrathod/website:latest
