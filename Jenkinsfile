@@ -52,10 +52,10 @@ pipeline {
                     sshagent(['ec2_ssh']) {
                         sh '''
                         ssh -o StrictHostKeyChecking=no ubuntu@65.1.107.233 <<EOF
-                        docker pull divyeshrathod/website:latest
-                        docker stop chatapp || true
-                        docker rm chatapp || true
-                        docker run -d -p 9000:9000 --name chatapp divyeshrathod/website:latest
+                        sudo docker pull divyeshrathod/website:latest
+                        sudo docker stop chatapp || true
+                        sudo docker rm chatapp || true
+                        sudo docker run -d -p 9000:9000 --name chatapp divyeshrathod/website:latest
                         EOF
                         '''
                     }
