@@ -5,7 +5,7 @@ pipeline {
         DOCKER_HUB_CREDENTIALS = credentials('docker')     // Docker Hub credentials
         EC2_SSH_CREDENTIALS = credentials('ec2_ssh')       // EC2 SSH credentials
         DOCKER_IMAGE = "divyeshrathod/website"
-        EC2_INSTANCE_IP = "52.66.243.78"                   // EC2 instance public IP
+        EC2_INSTANCE_IP = "65.1.107.233"                   // EC2 instance public IP
     }
 
     stages {
@@ -51,7 +51,7 @@ pipeline {
                 script {
                     sshagent(['ec2_ssh']) {
                         sh '''
-                        ssh -o StrictHostKeyChecking=no ubuntu@52.66.243.78 <<EOF
+                        ssh -o StrictHostKeyChecking=no ubuntu@65.1.107.233 <<EOF
                         docker pull divyeshrathod/website:latest
                         docker stop chatapp || true
                         docker rm chatapp || true
