@@ -56,8 +56,9 @@ pipeline {
                         sudo docker stop chatapp || true
                         sudo docker rm chatapp || true
                         sudo docker run -d -p 9000:9000 --name chatapp divyeshrathod/website:latest
-                        '''
+                        ...
                         EOF
+                        '''
                     }
                 }
             }
