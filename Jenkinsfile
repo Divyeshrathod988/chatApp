@@ -51,7 +51,7 @@ pipeline {
                 script {
                     sshagent(['ec2_ssh']) {
                         sh '''
-                        ssh -o StrictHostKeyChecking=no ubuntu@65.1.107.233 <<EOF
+                        ssh -o StrictHostKeyChecking=no ubuntu@65.1.107.233 <<'EOF'
                         sudo docker pull divyeshrathod/website:latest
                         sudo docker stop chatapp || true
                         sudo docker rm chatapp || true
